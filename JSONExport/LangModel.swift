@@ -42,6 +42,7 @@ class LangModel{
 	var wordsToRemoveToGetArrayElementsType : [String]!
     var headerFileData : HeaderFileData!
     var supportMutualRelationships : Bool!
+    var closureBuilder : String!
 
 	/**
 	 * Instantiate the instance using the passed dictionary values to set the properties values
@@ -100,6 +101,7 @@ class LangModel{
         }
         
         supportMutualRelationships = (dictionary["supportMutualRelationships"] as? NSString)?.boolValue
+        closureBuilder = dictionary["closureBuilder"] as? String
 	}
 
 	

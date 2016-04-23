@@ -114,6 +114,8 @@ class FileRepresenter{
         //start the model content body
         fileContent += "\(lang.modelStart)"
         
+        appendBuilderClosure()
+        
         appendProperties()
         appendSettersAndGetters()
         appendInitializers()
@@ -122,6 +124,17 @@ class FileRepresenter{
         fileContent = fileContent.stringByReplacingOccurrencesOfString(modelName, withString:className)
         fileContent += lang.modelEnd
         return fileContent
+    }
+    
+    /**
+     Appends the lang.staticImports if any
+     */
+    func appendBuilderClosure()
+    {
+        if lang.closureBuilder != nil{
+            fileContent += lang.closureBuilder
+            fileContent += "\n"
+        }
     }
     
     /**
@@ -182,14 +195,18 @@ class FileRepresenter{
             
             fileContent += " on \(getTodayFormattedDay())\n//\tCopyright © \(getYear())"
             
-            if let organization = me.valueForProperty(kABOrganizationProperty as String) as? String{
-                fileContent += " \(organization)"
+            if let firstName = me.valueForProperty(kABFirstNameProperty as String) as? String{
+                fileContent += " \(firstName)"
             }
             
-            fileContent += ". All rights reserved.\n"
+            if let lastName = me.valueForProperty(kABLastNameProperty as String) as? String{
+                fileContent += " \(lastName)"
+            }
+            
+            fileContent += ". All rights reserved.\n" //  "//\t\n\n" to finish
         }
         
-        fileContent += "//\tModel file Generated using JSONExport: https://github.com/Ahmed-Ali/JSONExport\n\n"
+        fileContent += "//\tModel file Generated using JSONExport: https://github.com/vivi7/JSONExport\n//\n\n"
         
     }
     
