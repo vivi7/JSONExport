@@ -128,7 +128,7 @@
                      "signature": "\tinit(fromJson json: JSON!)",
                      "fetchArrayOfCustomTypePropertyFromMap": "\t\t<!VarName!> = <!VarType!>()\n\t\tlet <!VarName!>Array = json[\"<!JsonKeyName!>\"].arrayValue\n\t\tfor <!VarName!>Json in <!VarName!>Array{\n\t\t\tlet value = <!ElementType!>(fromJson: <!VarName!>Json)\n\t\t\t<!VarName!>.append(value)\n\t\t}\n",
                      "comment": "\t/**\n\t * Instantiate the instance using the passed json values to set the properties values\n\t */\n",
-                     "fetchCustomTypePropertyFromMap": "\t\tlet <!VarName!>Json = json[\"<!JsonKeyName!>\"]\n\t\tif <!VarName!>Json != JSON.nullJSON{\n\t\t\t<!VarName!> = <!VarType!>(fromJson: <!VarName!>Json)\n\t\t}\n"
+                     "fetchCustomTypePropertyFromMap": "\t\tlet <!VarName!>Json = json[\"<!JsonKeyName!>\"]\n\t\tif <!VarName!>Json != JSON.null{\n\t\t\t<!VarName!> = <!VarType!>(fromJson: <!VarName!>Json)\n\t\t}\n"
                      }
                      ],
     "modelDefinition": "\nclass <!ModelName!>",
@@ -151,6 +151,6 @@
     "instanceVarDefinition": "\tvar <!VarName!> : <!VarType!>!\n",
     "supportsFirstLineStatement": "false",
     "modelEnd": "\n}",
-    "staticImports": "import Foundation",
+    "staticImports": "import Foundation\nimport SwiftyJSON",
     "langName": "Swift"
 }
