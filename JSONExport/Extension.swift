@@ -95,8 +95,6 @@ extension String{
         
     }
     
-    
-    
     var parseJSONString: AnyObject?{
         let data = self.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
         if let jsonData = data{
@@ -117,5 +115,21 @@ extension String{
             // Lossless conversion of the string was not possible
             return nil
         }
+    }
+    
+    func jsonStringPrettyPrinted() -> String {
+        let strToParse = self.stringByReplacingOccurrencesOfString("“", withString: "\"", options: NSStringCompareOptions.LiteralSearch, range: nil).stringByReplacingOccurrencesOfString("”", withString: "\"", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        return jsonStringPrettyPrintedFromData(strToParse.dataUsingEncoding(NSUTF8StringEncoding)!)
+    }
+    
+    func jsonStringPrettyPrintedFromData(data: NSData) -> String {
+        do {
+            let json = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+            let dataJson = try NSJSONSerialization.dataWithJSONObject(json, options: .PrettyPrinted)
+            return NSString(data: dataJson, encoding: NSUTF8StringEncoding) as! String
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
+        return self
     }
 }

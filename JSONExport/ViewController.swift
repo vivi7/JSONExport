@@ -32,7 +32,6 @@
 //
 
 import Cocoa
-import RxSwift
 import Alamofire
 //import SwiftyJSON
 
@@ -95,6 +94,12 @@ class ViewController: NSViewController{
     //Connect to current position inside textfield
     @IBOutlet var cursorPositionLabel: NSTextField!
     
+    //Connect to json formatter checks
+    @IBOutlet var jsonBodyFormatterCheck: NSButtonCell!
+    @IBOutlet var jsonHeaderFormatterCheck: NSButtonCell!
+    @IBOutlet var jsonSourceFormatterCheck: NSButtonCell!
+    
+    
     //Holds the currently selected language
     var selectedLang : LangModel!
     
@@ -112,8 +117,19 @@ class ViewController: NSViewController{
     //Holds list of the generated files
     var files : [FileRepresenter] = [FileRepresenter]()
     
+    private enum field : String{
+        case body, header, source
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //TODO: remove when formatters are ready
+        jsonBodyFormatterCheck.controlView?.hidden = true
+        jsonHeaderFormatterCheck.controlView?.hidden = true
+        jsonSourceFormatterCheck.controlView?.hidden = true
+        
+        
         
         sourceText.delegate = self
         headerTextField.delegate = self
@@ -176,8 +192,7 @@ class ViewController: NSViewController{
     
     
     //MARK: - Handling pre defined languages
-    func loadSupportedLanguages()
-    {
+    func loadSupportedLanguages(){
         if let langFiles = NSBundle.mainBundle().URLsForResourcesWithExtension("json", subdirectory: nil) as [NSURL]!{
             for langFile in langFiles{
                 if let data = NSData(contentsOfURL: langFile), langDictionary = (try? NSJSONSerialization.JSONObjectWithData(data, options: [])) as? NSDictionary{
@@ -199,42 +214,54 @@ class ViewController: NSViewController{
     //MARK: - Handlind events
     
     @IBAction func toggleConstructors(sender: AnyObject){
-        validateAndGenerateClasses("source")
+        validateAndGenerateClasses(field.source.rawValue)
     }
     
     
     @IBAction func toggleUtilities(sender: AnyObject){
-        validateAndGenerateClasses("source")
+        validateAndGenerateClasses(field.source.rawValue)
     }
     
     @IBAction func rootClassNameChanged(sender: AnyObject){
-        validateAndGenerateClasses("source")
+        validateAndGenerateClasses(field.source.rawValue)
     }
     
     @IBAction func parentClassNameChanged(sender: AnyObject){
-        validateAndGenerateClasses("source")
+        validateAndGenerateClasses(field.source.rawValue)
     }
     
     
     @IBAction func classPrefixChanged(sender: AnyObject){
-        validateAndGenerateClasses("source")
+        validateAndGenerateClasses(field.source.rawValue)
     }
     
     
     @IBAction func selectedLanguageChanged(sender: AnyObject){
         updateUIFieldsForSelectedLanguage()
-        validateAndGenerateClasses("source");
+        validateAndGenerateClasses(field.source.rawValue);
     }
     
     
     @IBAction func firstLineChanged(sender: AnyObject){
-        validateAndGenerateClasses("source")
+        validateAndGenerateClasses(field.source.rawValue)
     }
 
     @IBAction func urlLineChanged(sender: NSTextField) {
         callJson()
     }
     
+    
+    @IBAction func jsonSourceFormatterAction(sender: NSButtonCell) {
+        jsonFormatter(field.source.rawValue)
+    }
+    
+    @IBAction func jsonBodyFormatterAction(sender: NSButtonCell) {
+        jsonFormatter(field.body.rawValue)
+    }
+    
+    @IBAction func jsonHeaderFormatterAction(sender: NSButtonCell) {
+        jsonFormatter(field.header.rawValue)
+    }
     
     //MARK: - Showing the open panel and save files
     @IBAction func saveFiles(sender: AnyObject)
@@ -277,24 +304,24 @@ class ViewController: NSViewController{
         }
     }
     
-    func callJson() -> Observable<Any>? {
+    func callJson() {
         
         if urlTextField.stringValue.characters.count < 3 {
-            return nil
+            return
         }
 //        let httpProtStart = "http://"
 //        if !urlTextField.stringValue.containsString(httpProtStart){
 //            urlTextField.stringValue = httpProtStart
 //        }
         
-        let jsonBody = validateJSON(bodyTextField.string!)
+        let jsonBody = validateJSON(bodyTextField)
         if jsonBody == nil {
-            return nil
+            return
         }
         
-        let jsonHeader = validateJSON(headerTextField.string!)
+        let jsonHeader = validateJSON(headerTextField)
         if jsonHeader == nil {
-            return nil
+            return
         }
         
         let method = dictMethodAlamofire[methodPopUpButton.titleOfSelectedItem!]!
@@ -307,42 +334,24 @@ class ViewController: NSViewController{
             .response { request, response, data, error in
                 if error == nil{
                     self.apiProgressIndicator.layer?.backgroundColor = NSColor.greenColor().CGColor
-                    do {
-                        let json = try NSJSONSerialization.JSONObjectWithData(data!, options: .AllowFragments)
-                        let dataJson = try NSJSONSerialization.dataWithJSONObject(json, options: .PrettyPrinted)
-                        self.sourceText.string = NSString(data: dataJson, encoding: NSUTF8StringEncoding) as? String
-                        self.sourceText.didChangeText()
-                    } catch let error1 as NSError {
-                        self.apiProgressIndicator.layer?.backgroundColor = NSColor.redColor().CGColor
-                        self.descriptionErrorLabel.stringValue = error1.localizedDescription
-                    }
+                    
+                    self.sourceText.string = self.sourceText.string?.jsonStringPrettyPrintedFromData(data!)
+                    self.sourceText.didChangeText()
+                    //                    do {
+                    //                        let json = try NSJSONSerialization.JSONObjectWithData(data!, options: .AllowFragments)
+                    //                        let dataJson = try NSJSONSerialization.dataWithJSONObject(json, options: .PrettyPrinted)
+                    //                        self.sourceText.string = NSString(data: dataJson, encoding: NSUTF8StringEncoding) as? String
+                    //                        self.sourceText.didChangeText()
+                    //                    } catch let error1 as NSError {
+                    //                        self.apiProgressIndicator.layer?.backgroundColor = NSColor.redColor().CGColor
+                    //                        self.descriptionErrorLabel.stringValue = error1.localizedDescription
+                    //                    }
                 } else {
                     self.apiProgressIndicator.layer?.backgroundColor = NSColor.redColor().CGColor
                     self.descriptionErrorLabel.stringValue = error!.localizedDescription
                 }
-            }
-    
-
-        
-//        return create({ (observer) -> Disposable in
-//            let postBody = [
-//                "username": username,
-//                "password": password
-//            ]
-//            let request = Alamofire.request(.POST, "login", parameters: postBody)
-//                .responseJSON(completionHandler: { (firedResponse) -> Void in
-//                    if let value = firedResponse.result.value {
-//                        observer.onNext(value)
-//                        observer.onCompleted()
-//                    } else if let error = firedResponse.result.error {
-//                        observer.onError(error)
-//                    }
-//                })
-//            return AnonymousDisposable{
-//                request.cancel()
-//            }
-//        })
-        return nil
+        }
+        return
     }
     
     /**
@@ -426,7 +435,8 @@ class ViewController: NSViewController{
     
     //MARK: - Validate JSON
     
-    func validateJSON(jsonString:String) -> AnyObject? {
+    func validateJSON(field: NSTextView) -> AnyObject? {
+        let jsonString = field.string!
         descriptionErrorLabel.stringValue = ""
         if jsonString.characters.count == 0{
             //Nothing to do, just clear any generated files
@@ -440,6 +450,7 @@ class ViewController: NSViewController{
             do {
                 let jsonData : AnyObject = try NSJSONSerialization.JSONObjectWithData(data, options: [])
                 self.reloadUIAndMessage(true)
+                self.jsonFormatter(field.identifier!)
                 return jsonData
             } catch  let error as NSError{
                 let errorStr = error.userInfo
@@ -468,61 +479,18 @@ class ViewController: NSViewController{
     /**
     Validates the sourceText string input, and takes any needed action to generate the model classes and view them in the preview panel
     */
-//    func generateClasses() {
-//        saveButton.enabled = false
-//        
-//        var str = sourceText.string!
-//        if str.characters.count == 0{
-//            //Nothing to do, just clear any generated files
-//            files.removeAll(keepCapacity: false)
-//            tableView.reloadData()
-//            return
-//        }
-//        //sourceText.editable = false
-//        //Do the lengthy process in background, it takes time with more complicated JSONs
-//        runOnBackground {
-//            str = jsonStringByRemovingUnwantedCharacters(str)
-//            if let data = str.dataUsingEncoding(NSUTF8StringEncoding){
-//                var error : NSError?
-//                do {
-//                    let jsonData : AnyObject = try NSJSONSerialization.JSONObjectWithData(data, options: [])
-//                    var json : NSDictionary!
-//                    if jsonData is NSDictionary{
-//                        //fine nothing to do
-//                        json = jsonData as! NSDictionary
-//                    }else{
-//                        json = unionDictionaryFromArrayElements(jsonData as! NSArray)
-//                    }
-//                    
-//                    self.generateClassesCore(json)
-//                    
-//                    self.reloadUIAndMessage(true)
-//                } catch let error1 as NSError {
-//                    error = error1
-//                    if error != nil{
-//                        print(error)
-//                    }
-//                    self.reloadUIAndMessage(false)
-//                    
-//                } catch {
-//                    fatalError()
-//                }
-//            }
-//        }
-//    }
-
     func validateAndGenerateClasses(identifier: String) {
         switch identifier{
-        case "source":
-            generateClassesWithJson(validateJSON(sourceText!.string!))
-        case "body":
-            validateJSON(bodyTextField!.string!)
-        case "header":
-            validateJSON(headerTextField!.string!)
+        case field.source.rawValue:
+            generateClassesWithJson(validateJSON(sourceText!))
+        case field.body.rawValue:
+            validateJSON(bodyTextField!)
+        case field.header.rawValue:
+            validateJSON(headerTextField!)
         default:
-            validateJSON(bodyTextField!.string!)
-            validateJSON(headerTextField!.string!)
-            generateClassesWithJson(validateJSON(sourceText!.string!))
+            validateJSON(bodyTextField)
+            validateJSON(headerTextField)
+            generateClassesWithJson(validateJSON(sourceText!))
         }
         
     }
@@ -543,6 +511,7 @@ class ViewController: NSViewController{
                 json = unionDictionaryFromArrayElements(jsonData as! NSArray)
             }
             self.generateClassesCore(json)
+            //self.sourceText.string = self.sourceText.string?.jsonStringPrettyPrinted()
             self.tableView.reloadData()
             self.saveButton.enabled = true
         }
@@ -559,6 +528,35 @@ class ViewController: NSViewController{
         fileGenerator.addFileWithName(&rootClassName, jsonObject: json, files: &self.files)
         fileGenerator.fixReferenceMismatches(inFiles: self.files)
         self.files = Array(self.files.reverse())
+    }
+    
+    //MARK: - Formatter JSON
+    func jsonFormatter(identifier: String) {
+        switch identifier{
+        case field.source.rawValue:
+            if jsonSourceFormatterCheck.state == NSOnState{
+                sourceText!.string = sourceText!.string!.jsonStringPrettyPrinted()
+            }
+        case field.body.rawValue:
+            if jsonBodyFormatterCheck.state == NSOnState{
+                bodyTextField!.string = bodyTextField!.string!.jsonStringPrettyPrinted()
+            }
+        case field.header.rawValue:
+            if jsonHeaderFormatterCheck.state == NSOnState{
+                headerTextField!.string = headerTextField!.string!.jsonStringPrettyPrinted()
+            }
+        default:
+            if jsonSourceFormatterCheck.state == NSOnState{
+                sourceText!.string = sourceText!.string!.jsonStringPrettyPrinted()
+            }
+            if jsonBodyFormatterCheck.state == NSOnState{
+                bodyTextField!.string = bodyTextField!.string!.jsonStringPrettyPrinted()
+            }
+            if jsonHeaderFormatterCheck.state == NSOnState{
+                headerTextField!.string = headerTextField!.string!.jsonStringPrettyPrinted()
+            }
+        }
+        
     }
     
     //MARK: - Language selection handling

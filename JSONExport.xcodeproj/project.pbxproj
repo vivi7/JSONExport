@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		44454B631CCBFF3B00D25665 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44454B621CCBFF3B00D25665 /* SwiftyJSON.swift */; };
 		44B692821CCBAD4B00ACC0C1 /* SwiftyJSON-buildClosure-Class.json in Resources */ = {isa = PBXBuildFile; fileRef = 44B692811CCBAD4B00ACC0C1 /* SwiftyJSON-buildClosure-Class.json */; };
 		60FB8FF01B9B361600290979 /* Java-Android Realm.json in Resources */ = {isa = PBXBuildFile; fileRef = 60FB8FE61B9B361600290979 /* Java-Android Realm.json */; };
 		60FB8FF11B9B361600290979 /* Java-Android.json in Resources */ = {isa = PBXBuildFile; fileRef = 60FB8FE71B9B361600290979 /* Java-Android.json */; };
@@ -45,7 +44,6 @@
 
 /* Begin PBXFileReference section */
 		1A2589722766875F8E0FEC7B /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		44454B621CCBFF3B00D25665 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		44B692811CCBAD4B00ACC0C1 /* SwiftyJSON-buildClosure-Class.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "SwiftyJSON-buildClosure-Class.json"; path = "Supported Languages/SwiftyJSON-buildClosure-Class.json"; sourceTree = "<group>"; };
 		60FB8FE61B9B361600290979 /* Java-Android Realm.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "Java-Android Realm.json"; path = "Supported Languages/Java-Android Realm.json"; sourceTree = "<group>"; };
 		60FB8FE71B9B361600290979 /* Java-Android.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "Java-Android.json"; path = "Supported Languages/Java-Android.json"; sourceTree = "<group>"; };
@@ -141,7 +139,6 @@
 		E20A0DA61A1170C3003B3D62 /* Third party libraries */ = {
 			isa = PBXGroup;
 			children = (
-				44454B621CCBFF3B00D25665 /* SwiftyJSON.swift */,
 				E20A0DA71A1170E0003B3D62 /* Noodle Line Number */,
 			);
 			name = "Third party libraries";
@@ -392,7 +389,6 @@
 				E230BA2C1A113F8C00AE2054 /* FilePreviewCell.swift in Sources */,
 				E28631531A158CFA0041B178 /* DataType.swift in Sources */,
 				E278F9C61A2149AC00306EFC /* HeaderFileData.swift in Sources */,
-				44454B631CCBFF3B00D25665 /* SwiftyJSON.swift in Sources */,
 				E278F9CA1A2152D800306EFC /* HeaderFileRepresenter.swift in Sources */,
 				E20A0DAD1A1170F1003B3D62 /* NoodleLineNumberMarker.m in Sources */,
 			);
