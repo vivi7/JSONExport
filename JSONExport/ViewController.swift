@@ -120,6 +120,7 @@ class ViewController: NSViewController{
         bodyTextField.delegate = self
         
         prepareGraphic()
+        
         loadSupportedLanguages()
         setupNumberedTextView()
         setLanguagesSelection()
@@ -300,22 +301,27 @@ class ViewController: NSViewController{
         
         let url = urlTextField.stringValue
         
-        self.apiProgressIndicator.startAnimation("")
+        self.apiProgressIndicator.layer?.backgroundColor = NSColor.grayColor().CGColor
         Alamofire.request(method, url,
             parameters: jsonBody as? [String : AnyObject], encoding: .JSON, headers: jsonHeader as? [String:String])
-            
             .response { request, response, data, error in
-                if error != nil{
+                if error == nil{
+                    self.apiProgressIndicator.layer?.backgroundColor = NSColor.greenColor().CGColor
+                    do {
+                        let json = try NSJSONSerialization.JSONObjectWithData(data!, options: .AllowFragments)
+                        let dataJson = try NSJSONSerialization.dataWithJSONObject(json, options: .PrettyPrinted)
+                        self.sourceText.string = NSString(data: dataJson, encoding: NSUTF8StringEncoding) as? String
+                        self.sourceText.didChangeText()
+                    } catch let error1 as NSError {
+                        self.apiProgressIndicator.layer?.backgroundColor = NSColor.redColor().CGColor
+                        self.descriptionErrorLabel.stringValue = error1.localizedDescription
+                    }
+                } else {
                     self.apiProgressIndicator.layer?.backgroundColor = NSColor.redColor().CGColor
                     self.descriptionErrorLabel.stringValue = error!.localizedDescription
-                } else {
-                    self.apiProgressIndicator.layer?.backgroundColor = NSColor.greenColor().CGColor
-                    //self.generateClassesWithJson(data!)
-                    self.sourceText.string = String(data!)
                 }
-                self.apiProgressIndicator.stopAnimation("")
-        }
-        
+            }
+    
 
         
 //        return create({ (observer) -> Disposable in
@@ -426,7 +432,7 @@ class ViewController: NSViewController{
             //Nothing to do, just clear any generated files
             files.removeAll(keepCapacity: false)
             //tableView.reloadData()
-            return nil
+            return ""
         }
         
         let str = jsonStringByRemovingUnwantedCharacters(jsonString)
@@ -524,7 +530,7 @@ class ViewController: NSViewController{
     func generateClassesWithJson(jsonData : AnyObject?) {
         saveButton.enabled = false
         self.tableView.reloadData()
-        if jsonData == nil{
+        if jsonData == nil || jsonData is String{
             return
         }
         apiProgressIndicator.layer?.backgroundColor = NSColor.clearColor().CGColor
