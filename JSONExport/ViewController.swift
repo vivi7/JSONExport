@@ -2,8 +2,8 @@
 //  ViewController.swift
 //  JSONExport
 //
-//  Created by Ahmed on 11/2/14.
-//  Copyright (c) 2014 Ahmed Ali. Eng.Ahmed.Ali.Awad@gmail.com.
+//	Create by Vincenzo Favara on 24/04/2016
+//	Copyright © 2016 Vincenzo Favara. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
 //  modification, are permitted provided that the following conditions
@@ -36,7 +36,7 @@ import RxSwift
 import Alamofire
 //import SwiftyJSON
 
-class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTableViewDelegate, NSTableViewDataSource {
+class ViewController: NSViewController{
     
     //Shows the list of files' preview
     @IBOutlet weak var tableView: NSTableView!
@@ -46,9 +46,6 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
     
     //Connected to the save button
     @IBOutlet weak var saveButton: NSButton!
-    
-    //Connected to the JSON input text view
-    @IBOutlet var sourceText: NSTextView!
     
     //Connected to the scroll view which wraps the sourceText
     @IBOutlet weak var scrollView: NSScrollView!
@@ -74,18 +71,29 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
     //Connected to the languages pop up
     @IBOutlet weak var languagesPopup: NSPopUpButton!
     
+    //Connected to the JSON input text view
+    @IBOutlet var sourceText: NSTextView!
+    
     //Connect to the url for getting remote json
     @IBOutlet weak var urlTextField: NSTextField!
     
+    //Connect to body params to the url for getting remote json
     @IBOutlet var bodyTextField: NSTextView!
     
+    //Connect to header params to the url for getting remote json
     @IBOutlet var headerTextField: NSTextView!
     
+    //Connect to method to the url for getting remote json
     @IBOutlet var methodPopUpButton: NSPopUpButton!
     
+    //Connect to the description error
     @IBOutlet var descriptionErrorLabel: NSTextField!
     
+    //Connect to result for the url for getting remote json
     @IBOutlet var apiProgressIndicator: NSProgressIndicator!
+    
+    //Connect to current position inside textfield
+    @IBOutlet var cursorPositionLabel: NSTextField!
     
     //Holds the currently selected language
     var selectedLang : LangModel!
@@ -106,7 +114,12 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        saveButton.enabled = false
+        
+        sourceText.delegate = self
+        headerTextField.delegate = self
+        bodyTextField.delegate = self
+        
+        prepareGraphic()
         loadSupportedLanguages()
         setupNumberedTextView()
         setLanguagesSelection()
@@ -185,55 +198,42 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
     //MARK: - Handlind events
     
     @IBAction func toggleConstructors(sender: AnyObject){
-        generateClasses()
+        validateAndGenerateClasses("source")
     }
     
     
     @IBAction func toggleUtilities(sender: AnyObject){
-        generateClasses()
+        validateAndGenerateClasses("source")
     }
     
     @IBAction func rootClassNameChanged(sender: AnyObject){
-        generateClasses()
+        validateAndGenerateClasses("source")
     }
     
     @IBAction func parentClassNameChanged(sender: AnyObject){
-        generateClasses()
+        validateAndGenerateClasses("source")
     }
     
     
     @IBAction func classPrefixChanged(sender: AnyObject){
-        generateClasses()
+        validateAndGenerateClasses("source")
     }
     
     
     @IBAction func selectedLanguageChanged(sender: AnyObject){
         updateUIFieldsForSelectedLanguage()
-        generateClasses();
+        validateAndGenerateClasses("source");
     }
     
     
     @IBAction func firstLineChanged(sender: AnyObject){
-        generateClasses()
+        validateAndGenerateClasses("source")
     }
 
-    
-    //MARK: - Language selection handling
-    func loadSelectedLanguageModel(){
-        selectedLang = langs[selectedLanguageName]
-    }
-    
-    
-    //MARK: - NSUserNotificationCenterDelegate
-    func userNotificationCenter(center: NSUserNotificationCenter,
-        shouldPresentNotification notification: NSUserNotification) -> Bool
-    {
-        return true
-    }
-    
     @IBAction func urlLineChanged(sender: NSTextField) {
         callJson()
     }
+    
     
     //MARK: - Showing the open panel and save files
     @IBAction func saveFiles(sender: AnyObject)
@@ -251,6 +251,11 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
                 self.showDoneSuccessfully()
             }
         })
+    }
+    
+    func prepareGraphic(){
+        self.saveButton.enabled = false
+        self.apiProgressIndicator.layer?.cornerRadius = self.apiProgressIndicator.layer!.frame.height/2
     }
     
     func loadMethodPopUpButton(){
@@ -300,18 +305,15 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
             parameters: jsonBody as? [String : AnyObject], encoding: .JSON, headers: jsonHeader as? [String:String])
             
             .response { request, response, data, error in
-//                let json = JSON(data: data!)
                 if error != nil{
-//                    self.urlTextField.backgroundColor = NSColor.redColor()
                     self.apiProgressIndicator.layer?.backgroundColor = NSColor.redColor().CGColor
                     self.descriptionErrorLabel.stringValue = error!.localizedDescription
                 } else {
                     self.apiProgressIndicator.layer?.backgroundColor = NSColor.greenColor().CGColor
-                    self.generateClassesWithJson(data!)
+                    //self.generateClassesWithJson(data!)
+                    self.sourceText.string = String(data!)
                 }
                 self.apiProgressIndicator.stopAnimation("")
-                //completionHandler(json, error)
-                    
         }
         
 
@@ -423,8 +425,8 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
         if jsonString.characters.count == 0{
             //Nothing to do, just clear any generated files
             files.removeAll(keepCapacity: false)
-            tableView.reloadData()
-            return NSDictionary()
+            //tableView.reloadData()
+            return nil
         }
         
         let str = jsonStringByRemovingUnwantedCharacters(jsonString)
@@ -434,22 +436,23 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
                 self.reloadUIAndMessage(true)
                 return jsonData
             } catch  let error as NSError{
-                descriptionErrorLabel.stringValue = error.userInfo.debugDescription
+                let errorStr = error.userInfo
+                descriptionErrorLabel.stringValue = errorStr.description.stringByReplacingOccurrencesOfString("NSDebugDescription: ", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
             }
         }
         self.reloadUIAndMessage(false)
         return nil
     }
     
+    
+    //MARK: - Display
+    
     func reloadUIAndMessage(isGenerated: Bool){
         runOnUiThread({ () -> Void in
             //self.sourceText.editable = true
             if isGenerated{
                 self.showSuccessStatus("Valid JSON structure")
-                self.saveButton.enabled = true
-                self.tableView.reloadData()
             } else {
-                self.saveButton.enabled = false
                 self.showErrorStatus("It seems your JSON object is not valid!")
             }
         })
@@ -502,17 +505,29 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
 //        }
 //    }
 
-    func generateClasses() {
-        generateClassesWithJson(validateJSON(sourceText!.string!))
+    func validateAndGenerateClasses(identifier: String) {
+        switch identifier{
+        case "source":
+            generateClassesWithJson(validateJSON(sourceText!.string!))
+        case "body":
+            validateJSON(bodyTextField!.string!)
+        case "header":
+            validateJSON(headerTextField!.string!)
+        default:
+            validateJSON(bodyTextField!.string!)
+            validateJSON(headerTextField!.string!)
+            generateClassesWithJson(validateJSON(sourceText!.string!))
+        }
+        
     }
     
     func generateClassesWithJson(jsonData : AnyObject?) {
+        saveButton.enabled = false
+        self.tableView.reloadData()
         if jsonData == nil{
             return
         }
         apiProgressIndicator.layer?.backgroundColor = NSColor.clearColor().CGColor
-        saveButton.enabled = false
-        
         runOnBackground {
             var json : NSDictionary!
             if jsonData is NSDictionary{
@@ -523,6 +538,7 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
             }
             self.generateClassesCore(json)
             self.tableView.reloadData()
+            self.saveButton.enabled = true
         }
     }
     
@@ -537,6 +553,11 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
         fileGenerator.addFileWithName(&rootClassName, jsonObject: json, files: &self.files)
         fileGenerator.fixReferenceMismatches(inFiles: self.files)
         self.files = Array(self.files.reverse())
+    }
+    
+    //MARK: - Language selection handling
+    func loadSelectedLanguageModel(){
+        selectedLang = langs[selectedLanguageName]
     }
     
     /**
@@ -556,9 +577,9 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
         return filesBuilder
     }
     
-    
-    
-    
+}
+
+extension ViewController : NSTableViewDelegate, NSTableViewDataSource{
     //MARK: - NSTableViewDataSource
     func numberOfRowsInTableView(tableView: NSTableView) -> Int
     {
@@ -575,7 +596,15 @@ class ViewController: NSViewController, NSUserNotificationCenterDelegate, NSTabl
         
         return cell
     }
+}
+
+extension ViewController : NSUserNotificationCenterDelegate{
     
+    //MARK: - NSUserNotificationCenterDelegate
+    func userNotificationCenter(center: NSUserNotificationCenter,
+                                shouldPresentNotification notification: NSUserNotification) -> Bool{
+        return true
+    }
 }
 
 extension ViewController : NSTextViewDelegate{
@@ -583,7 +612,12 @@ extension ViewController : NSTextViewDelegate{
     //MARK: - NSTextDelegate
     
     func textDidChange(notification: NSNotification) {
-        generateClasses()
+        validateAndGenerateClasses(notification.object!.identifier!)
+    }
+    
+    func textViewDidChangeSelection(notification: NSNotification) {
+        let range = notification.userInfo!.first!.1
+        cursorPositionLabel.stringValue = range.description.stringByReplacingOccurrencesOfString("NSRange", withString: "Position", options: NSStringCompareOptions.LiteralSearch, range: nil)
     }
 }
 

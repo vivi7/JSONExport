@@ -1,8 +1,9 @@
 //
 //  HeaderFileRepresenter.swift
 //  JSONExport
-//  Created by Ahmed Ali on 11/23/14.
-//  Copyright (c) 2014 Ahmed Ali. Eng.Ahmed.Ali.Awad@gmail.com.
+//
+//	Create by Vincenzo Favara on 24/04/2016
+//	Copyright © 2016 Vincenzo Favara. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
 //  modification, are permitted provided that the following conditions
