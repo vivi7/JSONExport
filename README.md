@@ -2,6 +2,7 @@ JSONExport
 ==========
 JSONExport is a desktop application for Mac OS X written in Swift. 
 Using JSONExport you will be able to:
+* Get JSON from remote api, choosing request method and adding body and header
 * Convert any valid JSON object to a class of one of the currently supported languages.
 * Preview the generated content before saving it.
 * Include constructors only, utility methods only, both or none.
@@ -12,6 +13,7 @@ Using JSONExport you will be able to:
 Generated Files
 ========================
 Each generated file, besid the getters and setters (for Java) can include:
+* Added builder for Swift objects
 * A constructor wich accepts an instance of NSDictionary, JSON, JSONObject instance depending on the file language, and the class will use this object to fill its properties data.
 * A utility method which converts the class data into a dictionary again.
 
@@ -30,9 +32,7 @@ Currently you can convert your JSON object to one of the following lanaguages:
 9. Objective-C - MAC.
 10. Objective-C - CoreData.
 11. Objective-C - To use with [Realm](http://realm.io).
-
-Screenshot shows JSONExport used for a snippet from Twitter timeline JSON and converting it to Swift-CoreData.
-![alt tag](https://cloud.githubusercontent.com/assets/5157350/5228493/72693010-7713-11e4-9e42-625a8590424a.png)
+12. Swift Classes builder - To use with [SwiftyJSON](https://github.com/lingoer/SwiftyJSON) library with builder closure method.
 
 Installation
 ========================
@@ -43,10 +43,9 @@ To Do
 * ~~Support Objective-C~~ Done
 * ~~Sync multible classes with the same name or have the same exact properties~~ Done
 * ~~Support to parse JSON arrays of objects~~ Done
-* Load JSON data from web
+* ~~Load JSON data from web~~
 * Open .json files with JSONExport
 * Supported languages management editor.
-* Beside raw JSON, load the model raw data from plist files as well.
 
 
 Known Limitions:
@@ -59,41 +58,20 @@ Known Limitions:
 
 History log:
 ========================
-* Version 1.0.0
-	- Merged pull requests #28 and #31
-	- The app seems to be stable enough at this point
+* Version 2.0.0 (1)
+	- Load JSON data from api with body and header for all request method
+	- OPTIONS
+	- GET
+	- HEAD
+	- POST
+	- PUT
+	- PATCH
+	- DELETE
+	- TRACE
+	- CONNECT
 
-* Version 0.0.9
-  - Merged pull request #25 for support to Xcode 7 and Swift 2.0
-* Version 0.0.8
-  - Added reserved keywords for each language; json keys that has one of these keywords (eg: {"false": "This is false value"}), will be handled approperiately.
-  - Fix for issue #10, whcih prevented the creation of some classes/structs in some cases.
-  - Added NSCoding support for the following language definitions: Swift-Classes, Swift-Mappable, SwiftyJSON, Swift-Realm, Objective-C iOS, Mac and Realm.
-
-* Version 0.0.7
-  - Few changes by tomkidd for xCode 6.3 and Swift 1.2
-
-* Version 0.0.6
-  - JSONExport will first remove any control characters before parsing the JSON object. So it will able to parse your JSON even if it has control characters.
-  - Double check property names to avoid unwanted spaces (issue #5 thanks to falcon2010).
-  - Processing JSON now happens in background queue for better responsiveness.
-  - For Java (with and without Realm) parsing of array of strings (issue #6 thanks to falcon2010)
-
-* Version 0.0.5:
-  - Fixed an issue where float values would be generated into Int property (Thanks to jmonroe).
-  - Updated SiwftyJSON language definition to match the current version (Thanks to  jmonroe).
-  - Fixed typo in CGGFloat instead of CGFloat.
-  - In Objective-C check against NSNull values.
-  - Swift realm, initialize using class methods instead of initializers.
-  - Swift perimitive types now casted directly instead of cating to NSString first.
-
-* Version 0.0.4:
-  - Sync multible classes with the same name or have the same exact properties.
-  - Support to parse JSON arrays of objects.
-
-* Version 0.0.3:
-  - Added support for Realm with Android.
-  - Added support to specify parent class for all generated classes.
+*  Previews Version 
+  - Visit Ahmed-Ali github
 
 Final Note
 ========================
