@@ -501,7 +501,7 @@ class ViewController: NSViewController{
             return
         }
         apiProgressIndicator.layer?.backgroundColor = NSColor.clearColor().CGColor
-        runOnBackground {
+//        runOnBackground {
             var json : NSDictionary!
             if jsonData is NSDictionary{
                 //fine nothing to do
@@ -513,7 +513,7 @@ class ViewController: NSViewController{
             //self.sourceText.string = self.sourceText.string?.jsonStringPrettyPrinted()
             self.tableView.reloadData()
             self.saveButton.enabled = true
-        }
+//        }
     }
     
     func generateClassesCore(json:NSDictionary){
@@ -594,9 +594,11 @@ extension ViewController : NSTableViewDelegate, NSTableViewDataSource{
     func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView?
     {
         let cell = tableView.makeViewWithIdentifier("fileCell", owner: self) as! FilePreviewCell
-        let file = files[row]
-        cell.file = file
         
+        if files.count > 0 {
+            let file = files[row]
+            cell.file = file
+        }
         return cell
     }
 }
