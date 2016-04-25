@@ -91,29 +91,33 @@ class HeaderFileRepresenter : FileRepresenter{
     /**
     Tries to access the address book in order to fetch basic information about the author so it can include a nice copyright statment
     */
-    override func appendCopyrights()
-    {
-        if let me = ABAddressBook.sharedAddressBook()?.me(){
-            fileContent += "//\n//\t\(className).\(lang.headerFileData.headerFileExtension)\n"
-            if let firstName = me.valueForProperty(kABFirstNameProperty as String) as? String{
-                fileContent += "//\n//\tCreate by \(firstName)"
-                if let lastName = me.valueForProperty(kABLastNameProperty as String) as? String{
-                    fileContent += " \(lastName)"
-                }
-            }
-            
-            
-            fileContent += " on \(getTodayFormattedDay())\n//\tCopyright © \(getYear())"
-            
-            if let organization = me.valueForProperty(kABOrganizationProperty as String) as? String{
-                fileContent += " \(organization)"
-            }
-            
-            fileContent += ". All rights reserved.\n//\n\n"
-            fileContent += "//\tModel file Generated using JSONExport: https://github.com/Ahmed-Ali/JSONExport\n\n"
-        }
-        
-    }
+//    override func appendCopyrights()
+//    {
+//        if let me = ABAddressBook.sharedAddressBook()?.me(){
+//            fileContent += "//\n//\t\(className).\(lang.headerFileData.headerFileExtension)\n"
+//            if let firstName = me.valueForProperty(kABFirstNameProperty as String) as? String{
+//                fileContent += "//\n//\tCreate by \(firstName)"
+//                if let lastName = me.valueForProperty(kABLastNameProperty as String) as? String{
+//                    fileContent += " \(lastName)"
+//                }
+//            }
+//            
+//            
+//            fileContent += " on \(getTodayFormattedDay())\n//\tCopyright © \(getYear())"
+//            
+//            if let firstName = me.valueForProperty(kABFirstNameProperty as String) as? String{
+//                fileContent += " \(firstName)"
+//            }
+//            
+//            if let lastName = me.valueForProperty(kABLastNameProperty as String) as? String{
+//                fileContent += " \(lastName)"
+//            }
+//            
+//            fileContent += ". All rights reserved.\n//\n\n"
+//            fileContent += "//\tModel file Generated using JSONExport: https://github.com/vivi7/JSONExport  \n//\t(forked from Ahmed-Ali's JSONExport)\n\n"
+//        }
+//        
+//    }
     
     
     /**

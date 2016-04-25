@@ -444,7 +444,6 @@ class ViewController: NSViewController{
             //tableView.reloadData()
             return ""
         }
-        
         let str = jsonStringByRemovingUnwantedCharacters(jsonString)
         if let data = str.dataUsingEncoding(NSUTF8StringEncoding){
             do {

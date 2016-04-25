@@ -206,7 +206,7 @@ class FileRepresenter{
             fileContent += ". All rights reserved.\n" //  "//\t\n\n" to finish
         }
         
-        fileContent += "//\tModel file Generated using JSONExport: https://github.com/vivi7/JSONExport\n//\n\n"
+        fileContent += "//\tModel file Generated using JSONExport: https://github.com/vivi7/JSONExport \n//\t(forked from Ahmed-Ali's JSONExport)\n//\n\n"
         
     }
     

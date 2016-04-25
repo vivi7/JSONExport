@@ -17,7 +17,7 @@
                BlueprintIdentifier = "E2FA87B41A059AC100648EB6"
                BuildableName = "JSONExport.app"
                BlueprintName = "JSONExport"
-               ReferencedContainer = "container:JSONExport.xcodeproj">
+               ReferencedContainer = "container:JSONExportV.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
             BlueprintIdentifier = "E2FA87B41A059AC100648EB6"
             BuildableName = "JSONExport.app"
             BlueprintName = "JSONExport"
-            ReferencedContainer = "container:JSONExport.xcodeproj">
+            ReferencedContainer = "container:JSONExportV.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -58,7 +58,7 @@
             BlueprintIdentifier = "E2FA87B41A059AC100648EB6"
             BuildableName = "JSONExport.app"
             BlueprintName = "JSONExport"
-            ReferencedContainer = "container:JSONExport.xcodeproj">
+            ReferencedContainer = "container:JSONExportV.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -77,7 +77,7 @@
             BlueprintIdentifier = "E2FA87B41A059AC100648EB6"
             BuildableName = "JSONExport.app"
             BlueprintName = "JSONExport"
-            ReferencedContainer = "container:JSONExport.xcodeproj">
+            ReferencedContainer = "container:JSONExportV.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

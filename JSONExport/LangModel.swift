@@ -1,8 +1,8 @@
 //
 //	LangModel.swift
 //
-//	Create by Ahmed Ali on 14/11/2014
-//	Copyright (c) 2014 Mobile Developer. All rights reserved.
+//	Create by Vincenzo Favara on 24/04/2016
+//	Copyright © 2016 Vincenzo Favara. All rights reserved.
 //
 
 import Foundation
